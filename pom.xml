@@ -683,13 +683,25 @@
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
         <version>${junit.version}</version>
-        <scope>test</scope>
+<!--        <scope>test</scope>-->
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-runner</artifactId>
         <version>${junit-platform.version}</version>
-        <scope>test</scope>
+<!--        <scope>test</scope>-->
+      </dependency>
+
+      <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.0.0</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/com.codahale.metrics/metrics-graphite -->
+      <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-graphite</artifactId>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.junit.vintage</groupId>
@@ -751,7 +763,7 @@
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-annotations</artifactId>
         <version>${spotbugsannotations.version}</version>
-        <scope>provided</scope>
+<!--        <scope>provided</scope>-->
         <optional>true</optional>
       </dependency>
       <dependency>
