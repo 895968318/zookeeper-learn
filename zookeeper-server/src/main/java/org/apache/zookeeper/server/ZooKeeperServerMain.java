@@ -18,10 +18,6 @@
 
 package org.apache.zookeeper.server;
 
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import javax.management.JMException;
 import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.zookeeper.audit.ZKAuditProvider;
 import org.apache.zookeeper.jmx.ManagedUtil;
@@ -39,6 +35,11 @@ import org.apache.zookeeper.server.util.JvmPauseMonitor;
 import org.apache.zookeeper.util.ServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.management.JMException;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class starts and runs a standalone ZooKeeperServer.
@@ -105,8 +106,11 @@ public class ZooKeeperServerMain {
 
         ServerConfig config = new ServerConfig();
         if (args.length == 1) {
+            // one args ===> must config file path
             config.parse(args[0]);
         } else {
+            // clientPort dataDir            must
+            // tickTime and maxClientCnxns   optional
             config.parse(args);
         }
 
@@ -150,11 +154,14 @@ public class ZooKeeperServerMain {
             zkServer.registerServerShutdownHandler(new ZooKeeperServerShutdownHandler(shutdownLatch));
 
             // Start Admin server
+            // localhost:8080/commands  ---> classPath must hava jackson jar
             adminServer = AdminServerFactory.createAdminServer();
             adminServer.setZooKeeperServer(zkServer);
             adminServer.start();
 
             boolean needStartZKServer = true;
+            // default ---> NIOServerCnxnFactory
+            // optional ---> NettyServerCnxnFactory
             if (config.getClientPortAddress() != null) {
                 cnxnFactory = ServerCnxnFactory.createFactory();
                 cnxnFactory.configure(config.getClientPortAddress(), config.getMaxClientCnxns(), config.getClientPortListenBacklog(), false);
