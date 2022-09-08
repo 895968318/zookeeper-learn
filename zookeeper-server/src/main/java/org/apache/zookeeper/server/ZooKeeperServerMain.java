@@ -184,7 +184,7 @@ public class ZooKeeperServerMain {
             );
             containerManager.start();
             ZKAuditProvider.addZKStartStopAuditLog();
-
+            // nothing to do
             serverStarted();
 
             // Watch status of ZooKeeper server. It will do a graceful shutdown
