@@ -18,14 +18,15 @@
 
 package org.apache.zookeeper.server;
 
-import java.io.File;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.Properties;
 import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.zookeeper.metrics.impl.DefaultMetricsProvider;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
+
+import java.io.File;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * Server configuration storage.
@@ -44,7 +45,9 @@ public class ServerConfig {
     protected InetSocketAddress secureClientPortAddress;
     protected File dataDir;
     protected File dataLogDir;
+    // heart beat time
     protected int tickTime = ZooKeeperServer.DEFAULT_TICK_TIME;
+    // count that one client can connect
     protected int maxClientCnxns;
     /** defaults to -1 if not set explicitly */
     protected int minSessionTimeout = -1;
