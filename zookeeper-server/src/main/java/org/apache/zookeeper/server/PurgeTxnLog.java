@@ -73,6 +73,7 @@ public class PurgeTxnLog {
      * @throws IOException
      */
     public static void purge(File dataDir, File snapDir, int num) throws IOException {
+        // num 默认为3个
         if (num < 3) {
             throw new IllegalArgumentException(COUNT_ERR_MSG);
         }

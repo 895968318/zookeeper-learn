@@ -122,10 +122,12 @@ public class QuorumPeerMain {
     protected void initializeAndRun(String[] args) throws ConfigException, IOException, AdminServerException {
         QuorumPeerConfig config = new QuorumPeerConfig();
         if (args.length == 1) {
+            // parse and validate config file
             config.parse(args[0]);
         }
 
         // Start and schedule the the purge task
+        // cleanup of snapshots and corresponding transaction logs by scheduling the auto purge task with the specified
         DatadirCleanupManager purgeMgr = new DatadirCleanupManager(
             config.getDataDir(),
             config.getDataLogDir(),
