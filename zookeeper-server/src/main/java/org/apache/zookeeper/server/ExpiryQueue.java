@@ -18,6 +18,8 @@
 
 package org.apache.zookeeper.server;
 
+import org.apache.zookeeper.common.Time;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.zookeeper.common.Time;
 
 /**
  * ExpiryQueue tracks elements in time sorted fixed duration buckets.
@@ -82,6 +83,7 @@ public class ExpiryQueue<E> {
      *                 changed, or null if unchanged
      */
     public Long update(E elem, int timeout) {
+        // 当前元素过期的时间
         Long prevExpiryTime = elemMap.get(elem);
         long now = Time.currentElapsedTime();
         Long newExpiryTime = roundToNextInterval(now + timeout);
@@ -109,6 +111,7 @@ public class ExpiryQueue<E> {
         // mapping was present, clean up the previous expiry bucket.
         prevExpiryTime = elemMap.put(elem, newExpiryTime);
         if (prevExpiryTime != null && !newExpiryTime.equals(prevExpiryTime)) {
+            // 移除之前桶中该元素的引用
             Set<E> prevSet = expiryMap.get(prevExpiryTime);
             if (prevSet != null) {
                 prevSet.remove(elem);

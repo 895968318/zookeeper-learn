@@ -165,6 +165,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             this.acceptSocket = ss;
             // register accept event
             this.acceptKey = acceptSocket.register(selector, SelectionKey.OP_ACCEPT);
+            // 负责处理 IO 事件的 SelectorThread
             this.selectorThreads = Collections.unmodifiableList(new ArrayList<SelectorThread>(selectorThreads));
             selectorIterator = this.selectorThreads.iterator();
         }
@@ -319,6 +320,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         public SelectorThread(int id) throws IOException {
             super("NIOServerCxnFactory.SelectorThread-" + id);
             this.id = id;
+            // 连接的 Socket 存在该队列
             acceptedQueue = new LinkedBlockingQueue<SocketChannel>();
             updateQueue = new LinkedBlockingQueue<SelectionKey>();
         }
@@ -361,6 +363,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 while (!stopped) {
                     try {
                         select();
+                        // 接受连接事件
                         processAcceptedConnections();
                         processInterestOpsUpdateRequests();
                     } catch (RuntimeException e) {
@@ -426,6 +429,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
          * I/O is run directly by this thread.
          */
         private void handleIO(SelectionKey key) {
+            // 每一个请求都封装成 IOWorkerRequest
             IOWorkRequest workRequest = new IOWorkRequest(this, key);
             NIOServerCnxn cnxn = (NIOServerCnxn) key.attachment();
 
@@ -447,6 +451,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
                 SelectionKey key = null;
                 try {
                     key = accepted.register(selector, SelectionKey.OP_READ);
+                    // SocketChannel 的封装
                     NIOServerCnxn cnxn = createConnection(accepted, key, this);
                     key.attach(cnxn);
                     addCnxn(cnxn);
@@ -589,7 +594,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
 
     int sessionlessCnxnTimeout;
     private ExpiryQueue<NIOServerCnxn> cnxnExpiryQueue;
-
+    // default ==> 2 * numCores
     protected WorkerService workerPool;
 
     private static int directBufferBytes;
@@ -624,6 +629,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         // cnxnExpiryQueue. These don't need to be the same, but the expiring
         // interval passed into the ExpiryQueue() constructor below should be
         // less than or equal to the timeout.
+        // 处理超时
         cnxnExpiryQueue = new ExpiryQueue<NIOServerCnxn>(sessionlessCnxnTimeout);
         expirerThread = new ConnectionExpirerThread();
 
@@ -635,7 +641,7 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         if (numSelectorThreads < 1) {
             throw new IOException("numSelectorThreads must be at least 1");
         }
-
+        // workers 的数量
         numWorkerThreads = Integer.getInteger(ZOOKEEPER_NIO_NUM_WORKER_THREADS, 2 * numCores);
         workerShutdownTimeoutMS = Long.getLong(ZOOKEEPER_NIO_SHUTDOWN_TIMEOUT, 5000);
 
